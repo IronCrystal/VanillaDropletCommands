@@ -1,0 +1,10 @@
+name: VanillaDropletCommands
+version: 1.0 b1
+
+description: Vanilla Command "Droplet" plugin for the Vanilla plugin.
+author: IronCrystal
+
+main: me.IronCrystal.VanillaDropletCommands.VanillaDropletCommands
+platform: SERVER
+reload: true
+depends: [Vanilla]
