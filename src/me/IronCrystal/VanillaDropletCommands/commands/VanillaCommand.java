@@ -11,6 +11,7 @@ import org.spout.api.exception.CommandException;
 
 public class VanillaCommand {
 
+	@SuppressWarnings("unused")
 	private final VanillaDropletCommands plugin;
 
 	/**

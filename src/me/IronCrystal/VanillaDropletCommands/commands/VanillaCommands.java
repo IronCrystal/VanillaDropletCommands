@@ -21,5 +21,17 @@ public class VanillaCommands {
 	public void starve(CommandContext args, CommandSource source) {
 		CM.starve(args, source);		
 	}
+	
+	@Command(aliases = {"hurt", "damage"}, usage = "<player> <health level>", desc = "Sets the health level of the player.")
+	@CommandPermissions("vanillacommands.hurt")
+	public void hurt(CommandContext args, CommandSource source) {
+		CM.hurt(args, source);		
+	}
+	
+	@Command(aliases = {"ignite"}, usage = "<player>", desc = "Sets the player on fire.")
+	@CommandPermissions("vanillacommands.ignite")
+	public void ignite(CommandContext args, CommandSource source) {
+		CM.ignite(args, source);		
+	}
 
 }
