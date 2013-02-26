@@ -23,7 +23,7 @@ public class VanillaDropletCommands extends CommonPlugin {
 	@Override
 	@UnsafeMethod
 	public void onEnable() {
-		
+		getEngine().getEventManager().registerEvents(new PlayerListener(), this);
 		getLogger().log(Level.INFO, getDescription().getVersion() + " enabled");
 
 		/**

@@ -33,5 +33,11 @@ public class VanillaCommands {
 	public void ignite(CommandContext args, CommandSource source) {
 		CM.ignite(args, source);		
 	}
+	
+	@Command(aliases = {"fall"}, usage = "<player>", desc = "Makes the player fall.")
+	@CommandPermissions("vanillacommands.fall")
+	public void fall(CommandContext args, CommandSource source) {
+		CM.fall(args, source);		
+	}
 
 }
