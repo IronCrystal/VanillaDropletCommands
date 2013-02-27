@@ -39,5 +39,29 @@ public class VanillaCommands {
 	public void fall(CommandContext args, CommandSource source) {
 		CM.fall(args, source);		
 	}
+	
+	@Command(aliases = {"explode"}, usage = "<player>", desc = "Makes the player explode.")
+	@CommandPermissions("vanillacommands.explode")
+	public void explode(CommandContext args, CommandSource source) {
+		CM.explode(args, source);		
+	}
+	
+	@Command(aliases = {"blind"}, usage = "<player>", desc = "Makes the player blind.")
+	@CommandPermissions("vanillacommands.blind")
+	public void blind(CommandContext args, CommandSource source) {
+		CM.blind(args, source);		
+	}
+	
+	@Command(aliases = {"ill"}, usage = "<player>", desc = "Makes the player ill.")
+	@CommandPermissions("vanillacommands.ill")
+	public void ill(CommandContext args, CommandSource source) {
+		CM.ill(args, source);		
+	}
+	
+	@Command(aliases = {"hungry"}, usage = "<player>", desc = "Makes the player hungry.")
+	@CommandPermissions("vanillacommands.hungry")
+	public void hungry(CommandContext args, CommandSource source) {
+		CM.hungry(args, source);		
+	}
 
 }

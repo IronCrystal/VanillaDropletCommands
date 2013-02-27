@@ -8,8 +8,12 @@ import org.spout.api.command.CommandSource;
 import org.spout.api.entity.Player;
 import org.spout.api.geo.discrete.Point;
 import org.spout.vanilla.component.entity.misc.Burn;
+import org.spout.vanilla.component.entity.misc.Effects;
 import org.spout.vanilla.component.entity.misc.Health;
 import org.spout.vanilla.component.entity.misc.Hunger;
+import org.spout.vanilla.data.effect.ExplosionEffect;
+import org.spout.vanilla.data.effect.StatusEffect;
+import org.spout.vanilla.data.effect.StatusEffectContainer;
 import org.spout.vanilla.event.cause.HealthChangeCause;
 
 public class CommandMethods {
@@ -21,10 +25,10 @@ public class CommandMethods {
 	 */
 	public void starve(CommandContext args, CommandSource source) {
 		if (args.length() == 0) {
-			
+
 			try {
-			Spout.getEngine().getPlayer(source.getName(), false).get(Hunger.class).setHunger(0);
-			source.sendMessage(new ChatArguments("Succesfully set your hunger to zero"));
+				Spout.getEngine().getPlayer(source.getName(), false).get(Hunger.class).setHunger(0);
+				source.sendMessage(new ChatArguments("Succesfully set your hunger to zero"));
 			} catch (Exception e) {
 				source.sendMessage("You are not a player!");
 			}
@@ -57,9 +61,11 @@ public class CommandMethods {
 			} catch (Exception e) {
 				source.sendMessage(args.get(1), " is not a valid hunger level!");
 			}
+		}else{
+			source.sendMessage("Syntax: /c starve <player> <hunger level>");
 		}
 	}
-	
+
 	/**
 	 * Used for setting the health of the player.
 	 * @param args
@@ -68,8 +74,8 @@ public class CommandMethods {
 	public void hurt(CommandContext args, CommandSource source) {
 		if (args.length() == 0) {			
 			try {
-			Spout.getEngine().getPlayer(source.getName(), false).get(Health.class).setHealth(1, HealthChangeCause.COMMAND);
-			source.sendMessage(new ChatArguments("Succesfully set your health to one"));
+				Spout.getEngine().getPlayer(source.getName(), false).get(Health.class).setHealth(1, HealthChangeCause.COMMAND);
+				source.sendMessage(new ChatArguments("Succesfully set your health to one"));
 			} catch (Exception e) {
 				source.sendMessage("You are not a player!");
 			}
@@ -102,15 +108,22 @@ public class CommandMethods {
 			} catch (Exception e) {
 				source.sendMessage(args.get(1), " is not a valid health level!");
 			}
+		}else{
+			source.sendMessage("Syntax: /c hurt <player> <health level>");
 		}
 	}
-	
+
+	/**
+	 * Used for setting the player on fire
+	 * @param args
+	 * @param source
+	 */
 	public void ignite(CommandContext args, CommandSource source) {
 		if (args.length() == 0) {
 			try {
-			Player player = Spout.getEngine().getPlayer(source.getName(), false);
-			player.get(Burn.class).setOnFire(20, true);
-			source.sendMessage(new ChatArguments("Succesfully set you on fire!"));
+				Player player = Spout.getEngine().getPlayer(source.getName(), false);
+				player.get(Burn.class).setOnFire(20, true);
+				source.sendMessage(new ChatArguments("Succesfully set you on fire!"));
 			} catch (Exception e) {
 				source.sendMessage("You are not a player!");
 			}
@@ -125,9 +138,16 @@ public class CommandMethods {
 			} catch (NullPointerException e) {
 				source.sendMessage(args.get(0).toString(), " is not a player!");
 			}
+		}else{
+			source.sendMessage("Syntax: /c ignite <player>");
 		}
 	}
-	
+
+	/**
+	 * Used for teleporting the player high up
+	 * @param args
+	 * @param source
+	 */
 	public void fall(CommandContext args, CommandSource source) {
 		if (args.length() == 0) {
 			try {
@@ -153,6 +173,163 @@ public class CommandMethods {
 			} catch (NullPointerException e) {
 				source.sendMessage(args.get(0).toString(), " is not a player!");
 			}
+		}
+		else if (args.length() == 2) {
+			Player player = null;
+			int distance = 0;
+
+			try {
+				player = Spout.getEngine().getPlayer(args.get(0).getPlainString(), false);
+				Point point = player.getScene().getPosition();
+				distance = args.getInteger(1);
+				Point newPoint = new Point(point.getWorld(), point.getBlockX(), (point.getBlockY() + distance), point.getBlockZ());
+				player.teleport(newPoint);
+				source.sendMessage(new ChatArguments("Succesfully made ", player.getName(), " fall " + distance + " blocks!"));
+			} catch (NullPointerException e) {
+				source.sendMessage(args.get(0).toString(), " is not a player!");
+			} catch (Exception e) {
+				source.sendMessage(args.get(1).toString(), " is not a valid distance!");
+			}
+		}else{
+			source.sendMessage("Syntax: /c fall <player> <distance>");
+		}
+	}
+
+	/**
+	 * Used for creating an explosion around the player
+	 * @param args
+	 * @param source
+	 */
+	public void explode(CommandContext args, CommandSource source) {
+		if (args.length() == 0) {
+			try {
+				Player player = Spout.getEngine().getPlayer(source.getName(), false);
+				Point point = player.getScene().getPosition();
+				ExplosionEffect explosion = new ExplosionEffect(10, 4);
+				explosion.play(player, point);
+				player.get(Health.class).setHealth(0, HealthChangeCause.COMMAND);
+				source.sendMessage(new ChatArguments("Succesfully exploded!"));
+			} catch (Exception e) {
+				source.sendMessage(new ChatArguments("You must be a player!"));
+				source.sendMessage(new ChatArguments(ChatStyle.RED, "Or use /c explode <player>"));
+			}
+		}
+		else if (args.length() == 1) {
+			try {
+				Player player = Spout.getEngine().getPlayer(args.get(0).getPlainString(), false);
+				Point point = player.getScene().getPosition();
+				ExplosionEffect explosion = new ExplosionEffect(10, 4);
+				explosion.play(player, point);
+				player.get(Health.class).setHealth(0, HealthChangeCause.COMMAND);
+				source.sendMessage(new ChatArguments("Succesfully exploded ", player.getName(), "!"));
+			} catch (NullPointerException e) {
+				source.sendMessage(args.get(0).toString(), " is not a player!");
+			}
+		}else{
+			source.sendMessage("Syntax: /c explode <player>");
+		}
+	}
+
+	/**
+	 * Used for blinding a player
+	 * @param args
+	 * @param source
+	 */
+	public void blind(CommandContext args, CommandSource source) {
+		if (args.length() == 0) {
+			try {
+				Player player = Spout.getEngine().getPlayer(source.getName(), false);
+				StatusEffectContainer blindness = new StatusEffectContainer(StatusEffect.BLINDNESS, 20);
+				player.add(Effects.class).addEffect(blindness);
+				source.sendMessage(new ChatArguments("Succesfully made blind!"));
+			} catch (Exception e) {
+				source.sendMessage(new ChatArguments("You must be a player!"));
+				source.sendMessage(new ChatArguments(ChatStyle.RED, "Or use /c blind <player>"));
+			}
+		}
+		else if (args.length() == 1) {
+			try {
+				Player player = Spout.getEngine().getPlayer(args.get(0).getPlainString(), false);
+				StatusEffectContainer blindness = new StatusEffectContainer(StatusEffect.BLINDNESS, 20);
+				player.add(Effects.class).addEffect(blindness);
+				source.sendMessage(new ChatArguments("Succesfully made ", player.getName(), " blind!"));
+			} catch (NullPointerException e) {
+				source.sendMessage(args.get(0).toString(), " is not a player!");
+			}
+		}else{
+			source.sendMessage("Syntax: /c blind <player>");
+		}
+	}
+
+	/**
+	 * Used for giving the player the Nausea effect
+	 * @param args
+	 * @param source
+	 */
+	public void ill(CommandContext args, CommandSource source) {
+		if (args.length() == 0) {
+			try {
+				Player player = Spout.getEngine().getPlayer(source.getName(), false);
+				StatusEffectContainer nausea = new StatusEffectContainer(StatusEffect.NAUSEA, 20);
+				player.add(Effects.class).addEffect(nausea);
+				source.sendMessage(new ChatArguments("Succesfully made ill!"));
+			} catch (Exception e) {
+				source.sendMessage(new ChatArguments("You must be a player!"));
+				source.sendMessage(new ChatArguments(ChatStyle.RED, "Or use /c ill <player>"));
+			}
+		}
+		else if (args.length() == 1) {
+			try {
+				Player player = Spout.getEngine().getPlayer(args.get(0).getPlainString(), false);
+				StatusEffectContainer nausea = new StatusEffectContainer(StatusEffect.NAUSEA, 20);
+				player.add(Effects.class).addEffect(nausea);
+				source.sendMessage(new ChatArguments("Succesfully made ", player.getName(), " ill!"));
+			} catch (NullPointerException e) {
+				source.sendMessage(args.get(0).toString(), " is not a player!");
+			}
+		}else{
+			source.sendMessage("Syntax: /c ill <player>");
+		}
+	}
+
+	/**
+	 * Used for giving the player the hunger effect
+	 * @param args
+	 * @param source
+	 */
+	public void hungry(CommandContext args, CommandSource source) {
+		if (args.length() == 0) {
+			try {
+				Player player = Spout.getEngine().getPlayer(source.getName(), false);
+				StatusEffectContainer hunger = new StatusEffectContainer(StatusEffect.HUNGER, 20);
+				player.add(Effects.class).addEffect(hunger);
+				source.sendMessage(new ChatArguments("Succesfully made hungry!"));
+			} catch (Exception e) {
+				source.sendMessage(new ChatArguments("You must be a player!"));
+				source.sendMessage(new ChatArguments(ChatStyle.RED, "Or use /c hungry <player>"));
+			}
+		}
+		else if (args.length() == 1) {
+			try {
+				Player player = Spout.getEngine().getPlayer(args.get(0).getPlainString(), false);
+				StatusEffectContainer nausea = new StatusEffectContainer(StatusEffect.HUNGER, 20);
+				player.add(Effects.class).addEffect(nausea);
+				source.sendMessage(new ChatArguments("Succesfully made ", player.getName(), " hungry!"));
+			} catch (NullPointerException e) {
+				source.sendMessage(args.get(0).toString(), " is not a player!");
+			}
+		}
+		else if (args.length() == 2) {
+			try {
+				Player player = Spout.getEngine().getPlayer(args.get(0).getPlainString(), false);
+				StatusEffectContainer nausea = new StatusEffectContainer(StatusEffect.HUNGER, 20, args.getInteger(1));
+				player.add(Effects.class).addEffect(nausea);
+				source.sendMessage(new ChatArguments("Succesfully made ", player.getName(), " hungry at level ", args.getInteger(1)));
+			} catch (NullPointerException e) {
+				source.sendMessage(args.get(0).toString(), " is not a player!");
+			}
+		}else{
+			source.sendMessage("Syntax: /c hungry <player>");
 		}
 	}
 }
